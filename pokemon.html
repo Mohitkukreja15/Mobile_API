@@ -7,7 +7,7 @@
 </head>
 <body>
     <div id="Pokemons"></div>
-    <div id="Pokemondetails"></div>
+    <div id="Pokemon_details"></div>
 
 <script>
     // Define async function to fetch data from URL
@@ -19,7 +19,7 @@
     // Define function to generate and display Pokemon details
     function displayDetails(pokemon) {
         // Get the container for Pokemon details
-        var detailsPart = document.getElementById('Pokemondetails');
+        var detailsPart = document.getElementById('Pokemon_details');
         // Generate and set the content using the pokemondesc function
         detailsPart.innerHTML = pokemondesc(pokemon);
 
@@ -105,7 +105,7 @@
         border: 1px solid black;
     }
 
-    #Pokemondetails {
+    #Pokemon_details {
         text-align: left;
         border: 1px solid black;
         padding: 20px;
