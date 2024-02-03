@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokeman API</title>
+</head>
+<body>
+    <div id="Pokemons"></div>
+    <div id="Pokemondetails"></div>
+
+<script>
+    // Define async function to fetch data from URL
+    async function getdata(url) {
+        const response = await fetch(url);
+        return await response.json();
+    }
+
+    // Define function to generate and display Pokemon details
+    function displayDetails(pokemon) {
+        // Get the container for Pokemon details
+        var detailsPart = document.getElementById('Pokemondetails');
+        // Generate and set the content using the pokemondesc function
+        detailsPart.innerHTML = pokemondesc(pokemon);
+
+        // Get the container for abilities
+        var abilities = document.getElementById('abilities');
+        // Loop through each ability of the Pokemon
+        pokemon.abilities.forEach(function (ability) {
+            var listItem = document.createElement('li'); // Create list item
+            listItem.textContent = ability.ability.name; // Set text content
+            listItem.addEventListener('click', async function () { // Add click event listener
+                var abilityDetails = await getdata(ability.ability.url); // Fetch ability details
+                // Show ability details in an alert
+                alert(
+                    'Ability Name: ' + abilityDetails.name +
+                    '\nAbility Effect: ' + abilityDetails.effect_entries.find(function (entry) {
+                        return entry.language.name === 'en';
+                    }).effect +
+                    '\nAbility Short Effect: ' + abilityDetails.effect_entries.find(function (entry) {
+                        return entry.language.name === 'en';
+                    }).short_effect +
+                    '\nFlavor Text: ' + abilityDetails.flavor_text_entries.find(function (entry) {
+                        return entry.language.name === 'en';
+                    }).flavor_text
+                );
+            });
+            abilities.appendChild(listItem); // Append list item to abilities
+        });
+    }
+
+    // Define function to generate Pokemon description
+    function pokemondesc(pokemon) {
+        return (
+            '<h2>' + pokemon.name + '</h2>' +
+            '<img src="' + pokemon.sprites.front_default + '" alt="' + pokemon.name + '">' +
+            '<p><b>Abilities:</b> ' + pokemon.abilities.map(ability => ability.ability.name).join(', ') + '</p>' +
+            '<p><b>Height:</b> ' + pokemon.height + '</p>' +
+            '<p><b>Base Experience:</b> ' + pokemon.base_experience + '</p>' +
+            '<h3>Abilities Details:</h3>' +
+            '<ul id="abilities"></ul>'
+        );
+    }
+
+    // Define async function to display Pokemon list
+    async function displayPokemonList() {
+        const pokemonListContainer = document.getElementById('Pokemons');
+        const pokemonNames = ['rattata', 'charmander', 'squirtle', 'pikachu', 'weedle']; // Array of Pokemon names
+
+        // Loop through each Pokemon name
+        for (const pokemonName of pokemonNames) {
+            const pokemonData = await getdata(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`); // Fetch Pokemon data
+            const pokemonContainer = document.createElement('div'); // Create container to display Pokemon list
+            pokemonContainer.className = 'pokemon';
+            pokemonContainer.innerHTML =
+                '<img src="' + pokemonData.sprites.front_default + '" alt="' + pokemonData.name + '">' +
+                '<p>' + pokemonData.name + '</p>';
+
+            pokemonContainer.addEventListener('click', () => displayDetails(pokemonData)); // Add click event listener
+            pokemonListContainer.appendChild(pokemonContainer); // Append container to Pokemon list
+        }
+    }
+
+    displayPokemonList(); // Call function to display Pokemon list
+</script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+    }
+
+    #Pokemons {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        border: 1px solid black;
+    }
+
+    .pokemon {
+        cursor: pointer;
+        margin: 10px;
+        border: 1px solid black;
+    }
+
+    #Pokemondetails {
+        text-align: left;
+        border: 1px solid black;
+        padding: 20px;
+    }
+</style>
+
+</body>
+</html>
